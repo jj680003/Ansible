@@ -1,0 +1,8 @@
+ansible-playbook -i inventory users.yml
+
+
+på controller
+
+pip install --upgrade openstacksdk
+
+
