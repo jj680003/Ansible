@@ -1,0 +1,5 @@
+
+[openstack_controllers]
+controller ansible_host=controller ansible_user=root
+
+
