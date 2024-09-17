@@ -1,0 +1,14 @@
+#placeres på controller /etc/openstack/clouds.yaml
+
+clouds:
+  my_openstack:
+    auth:
+      auth_url: https://your-openstack-endpoint/v3
+      username: admin
+      password: your_password
+      project_name: admin_project
+      user_domain_name: Default
+      project_domain_name: Default
+    region_name: RegionOne
+    interface: public
+    identity_api_version: 3
