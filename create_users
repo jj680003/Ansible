@@ -1,0 +1,52 @@
+---
+- name: Create users and projects in OpenStack
+  hosts: controller
+  gather_facts: false
+
+  vars:
+    password: "Test1234!"  # Static password for all users
+    domain_name: "default"  # Domain to use, adjust if not default
+    user_role: "member"  # Role to assign to the user in their project
+
+  tasks:
+    - name: Read user list from file
+      set_fact:
+        user_list: "{{ lookup('file', 'user.list').splitlines() }}"
+
+    - name: Create projects for users in OpenStack
+      loop: "{{ user_list }}"
+      vars:
+        username: "{{ item }}"
+      openstack.cloud.project:
+        cloud: my_openstack
+        name: "{{ username }}"
+        domain: "{{ domain_name }}"
+        state: present
+      delegate_to: "{{ inventory_hostname }}"
+
+    - name: Create users in OpenStack
+      loop: "{{ user_list }}"
+      vars:
+        username: "{{ item }}"
+      openstack.cloud.identity_user:
+        cloud: my_openstack
+        name: "{{ username }}"
+        password: "{{ password }}"
+        email: "{{ username }}@example.com"
+        default_project: "{{ username }}"
+        domain: "{{ domain_name }}"
+        enabled: true
+        state: present
+      delegate_to: "{{ inventory_hostname }}"
+
+    - name: Assign the user to their project
+      loop: "{{ user_list }}"
+      vars:
+        username: "{{ item }}"
+      openstack.cloud.role_assignment:
+        cloud: my_openstack
+        user: "{{ username }}"
+        project: "{{ username }}"
+        role: "{{ user_role }}"
+        domain: "{{ domain_name }}"
+      delegate_to: "{{ inventory_hostname }}"
